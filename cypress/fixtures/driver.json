@@ -45,5 +45,18 @@
       "user": "driver.automation",
       "password": "123456"
     }
+  },
+  "edit": {
+      "name": "Driver Modificado",
+      "driverType": "Seller",
+      "contractType": "Temporary",
+      "team": "Caruaru",
+      "status": "Inoperative",
+      "registration": "200900"
+  },
+  "quickEdit": {
+    "registration": "900200",
+    "integration": "RFID",
+    "rfid": "123456789"
   }
 }

@@ -32,7 +32,7 @@ describe('Driver page', () => {
 
     it('should trigger create new action', () => {
         DriverPage.clickCreateNew()
-    })*/
+    })
 
     it('should create a basic driver', () => {
         cy.fixture('driver').then((data) => {
@@ -40,9 +40,21 @@ describe('Driver page', () => {
         })
     })
 
-    /*it('should create a complete driver', () => {
+    it('should create a complete driver', () => {
         cy.fixture('driver').then((driver) => {
             DriverPage.createCompleteDriver(driver.complete)
+        })
+    })*/
+
+    it('should update driver using quick edit', () => {
+        cy.fixture('driver').then(({ quickEdit }) => {
+            DriverPage.updateDriverUsingQuickEdit('Lion', quickEdit)
+        })
+    })/*
+    
+    it('should update driver using full edit', () => {
+        cy.fixture('driver').then(({ edit }) => {
+            DriverPage.updateBasicDriver('Lion', edit)
         })
     })
 

@@ -208,14 +208,24 @@ class DriverPage {
             .should('be.visible')
     }
 
-    fillInput(label, value) {
-        cy.contains('label span', label)
+    getTextInput(label) {
+        return cy.contains('label span', label)
             .parents('.text-input')
             .find('input')
-            .should('be.visible')
+    }
+
+    fillInput(label, value) {
+        this.getTextInput(label)
             .click({ force: true })
-            .type('{selectall}{backspace}')
-            .type(value)
+
+        this.getTextInput(label)
+            .clear({ force: true })
+
+        this.getTextInput(label)
+            .type(String(value), {
+                delay: 40,
+                force: true
+            })
     }
 
     fillDate(label, value) {
@@ -234,39 +244,38 @@ class DriverPage {
     }
 
     selectAutocomplete(label, value) {
-        cy.contains('label span', label)
-            .parents('.md-select')
-            .as('autocompleteField')
+        const autocompleteInput = () => {
+            return cy.contains('label span', label)
+                .parents('.md-select')
+                .find('input')
+        }
 
-        cy.get('@autocompleteField')
-            .find('input')
+        autocompleteInput()
             .should('be.visible')
             .click({ force: true })
-            .type('{selectall}{backspace}')
 
-        cy.get('@autocompleteField')
-            .find('input')
-            .should('be.visible')
-            .type(value, { delay: 80 })
+        autocompleteInput()
+            .type('{selectall}{backspace}', { force: true })
+
+        cy.wrap(String(value).split('')).each((char) => {
+            autocompleteInput()
+                .should('be.visible')
+                .type(char, { force: true, delay: 3 })
+        })
 
         cy.get('.items__scroll')
             .filter(':visible')
             .last()
-            .within(() => {
-                cy.get('.items__scroll__item')
-                    .should('have.length.greaterThan', 0)
-                    .then(($items) => {
-                        const item = [...$items].find((el) => {
-                            return el.innerText
-                                .trim()
-                                .toLowerCase()
-                                .includes(value.toLowerCase())
-                        })
+            .find('.items__scroll__item')
+            .should('have.length.greaterThan', 0)
+            .then(($items) => {
+                const item = [...$items].find((el) =>
+                    el.innerText.toLowerCase().includes(String(value).toLowerCase())
+                )
 
-                        expect(item, `option "${value}"`).to.exist
+                expect(item, `option "${value}"`).to.exist
 
-                        cy.wrap(item).click({ force: true })
-                    })
+                cy.wrap(item).click({ force: true })
             })
     }
 
@@ -335,14 +344,7 @@ class DriverPage {
     }
 
     fillCredentialInput(label, value) {
-        cy.get('.modal')
-            .contains('label span', label)
-            .parents('.text-input')
-            .find('input')
-            .should('be.visible')
-            .click({ force: true })
-            .type('{selectall}{backspace}')
-            .type(value)
+        this.fillInput(label, value)
     }
 
     selectCredentialVehicle(vehicle) {
@@ -402,6 +404,155 @@ class DriverPage {
             .should(($row) => {
                 expect($row.text().toLowerCase()).to.include(driverName.toLowerCase())
             })
+    }
+
+    //Ação de editar registro
+    updateDriverUsingQuickEdit(searchText, driver) {
+        this.openQuickEditBySearch(searchText)
+
+        if (driver.integration) {
+            this.fillQuickEditInput('Registration', driver.registration)
+        }
+        
+        if (driver.integration) {
+            this.fillQuickEditInput('Integration', driver.integration)
+        }
+
+        if (driver.rfid) {
+            this.fillQuickEditInput('RFID', driver.rfid)
+        }
+
+        this.confirmQuickEdit()
+
+        //this.assertDriverExistsBySearch(searchText)
+    }
+
+    clickQuickEdit() {
+        cy.get('.r-dropdown-menu')
+            .contains('Quick Edit')
+            .should('be.visible')
+            .click({ force: true })
+
+        cy.get('.item-edit')
+            .should('be.visible')
+    }
+
+    openQuickEditBySearch(text) {
+        this.searchByText(text)
+        this.scrollTableToActions()
+        this.openEditMenuFromFirstResult()
+        this.clickQuickEdit()
+    }
+
+    confirmQuickEdit() {
+        cy.get('.item-edit')
+            .find('.fa-check, .fa-check-circle')
+            .should('be.visible')
+            .click({ force: true })
+    }
+
+    fillQuickEditInput(label, value) {
+        cy.get('.item-edit')
+            .contains('label span', label)
+            .parents('.text-input')
+            .find('input')
+            .should('be.visible')
+            .click({ force: true })
+            .type('{selectall}{backspace}', { force: true })
+            .type(String(value), { force: true, delay: 30 })
+    }
+
+    selectQuickEditAutocomplete(label, value) {
+        cy.get('.item-edit')
+            .contains('label span', label)
+            .parents('.md-select')
+            .as('quickSelect')
+
+        cy.get('@quickSelect')
+            .find('input')
+            .should('be.visible')
+            .click({ force: true })
+            .type('{selectall}{backspace}', { force: true })
+
+        cy.wrap(String(value).split('')).each((char) => {
+            cy.get('@quickSelect')
+                .find('input')
+                .should('be.visible')
+                .type(char, { force: true, delay: 30 })
+        })
+
+        cy.get('.items__scroll')
+            .filter(':visible')
+            .last()
+            .find('.items__scroll__item')
+            .first()
+            .click({ force: true })
+    }
+
+    openEditMenuFromFirstResult() {
+        cy.get('.crud-list tbody tr')
+        .first()
+        .within(() => {
+            cy.get('.fa-pencil-alt')
+                .scrollIntoView()
+                .click()
+        })
+    }
+
+    clickCompleteEdit() {
+        cy.intercept({ method: /GET|POST/, url: '**/driver/**' }).as('getDriver')
+
+        cy.get('.r-dropdown-menu')
+            .contains('Full Edit')
+            .should('be.visible')
+            .click({ force: true })
+
+        cy.wait('@getDriver')
+
+        cy.contains('h3', /Edit Driver/i)
+            .should('be.visible')
+
+        cy.contains('label span', 'Name')
+            .parents('.text-input')
+            .find('input')
+            .should('not.have.value', '')
+    }
+
+    openCompleteEditBySearch(text) {
+        this.searchByText(text)
+        this.openEditMenuFromFirstResult()
+        this.clickCompleteEdit()
+    }
+
+    scrollTableToActions() {
+        cy.get('.crud-table')
+            .scrollTo('right', { ensureScrollable: false })
+    }
+
+    updateBasicDriver(searchText, driver) {
+        this.openCompleteEditBySearch(searchText)
+
+        this.fillPersonalData(driver)
+
+        this.saveDriver()
+
+        //this.assertDriverExistsBySearch(driver.name)
+    }
+
+    updateCompleteDriver(searchText, driver) {
+        this.openCompleteEditBySearch(searchText)
+
+        this.fillPersonalData(driver)
+        this.fillDocumentation(driver)
+        this.fillContact(driver)
+
+        if (driver.credential) {
+            this.addCredential(driver.credential)
+        }
+
+        this.saveDriver()
+
+        //this.assertDriverExistsBySearch(driver.name)
     }
 
     //Importação de dados da fixture, separado por bloco para cadastro obrigatório e cadastro completo
