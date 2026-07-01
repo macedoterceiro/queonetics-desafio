@@ -15,16 +15,16 @@ class SidebarPage {
         this.expandSidebar()
 
         cy.contains('.tx-sidebar__item__title', moduleName)
-        .should('be.visible')
-        .click({ force: true })
+            .should('be.visible')
+            .click({ force: true })
     }
 
     accessSettings() {
         this.openModule('Dashboard')
 
         cy.get('a.tx-sidebar__subitem[href="#/dashboard/manager"]')
-        .should('be.visible')
-        .click()
+            .should('be.visible')
+            .click()
 
         cy.url().should('include', '/manager')
     }
@@ -33,8 +33,8 @@ class SidebarPage {
         this.openModule('Fleet')
 
         cy.get('a.tx-sidebar__subitem[href="#/driver"]')
-        .should('be.visible')
-        .click()
+            .should('be.visible')
+            .click()
 
         cy.url().should('include', '#/driver')
     }
@@ -43,18 +43,18 @@ class SidebarPage {
         this.expandSidebar()
 
         cy.get('.tx-sidebar__user')
-        .click({ force: true })
+            .click({ force: true })
     }
 
     accessEdit() {
         this.openUserMenu()
 
         cy.get('.tx-sidebar__user__icon')
-        .click({ force: true })
+            .click({ force: true })
 
         cy.contains(/Information/)
-        .should('be.visible')
-        .click({ force: true })
+            .should('be.visible')
+            .click({ force: true })
 
         cy.url().should('include', '/edit')
     }
@@ -63,11 +63,11 @@ class SidebarPage {
         this.openUserMenu()
 
         cy.get('.tx-sidebar__user__icon')
-        .click({ force: true })
+            .click({ force: true })
 
         cy.contains(/Logout/)
-        .should('be.visible')
-        .click({ force: true })
+            .should('be.visible')
+            .click({ force: true })
     }
 }
 

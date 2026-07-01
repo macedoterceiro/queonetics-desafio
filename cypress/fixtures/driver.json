@@ -1,0 +1,42 @@
+{
+  "basic": {
+    "name": "Zé Driver",
+    "driverType": "Driver",
+    "contractType": "Permanent",
+    "team": "Fortaleza",
+    "status": "Active",
+    "registration": "900100"
+  },
+  "complete": {
+    "name": "Jose Driver da Silva",
+    "driverType": "Driver",
+    "contractType": "Permanent",
+    "team": "Fortaleza",
+    "status": "Active",
+    "registration": "900101",
+    "registrationCode": "AUTO-900101",
+    "greenMileCode": "GM-900101",
+    "admissionDate": "01/07/2026",
+    "nationalId": "12345678900",
+    "taxId": "12345678901",
+    "dateOfBirth": "01/01/1990",
+    "license": "123456789",
+    "licenseCategory": "AB",
+    "licenseRegister": "MG123456",
+    "driverRecordNumber": "987654",
+    "licenseIssueDate": "01/01/2020",
+    "expiration": "01/01/2030",
+    "firstLicenseDate": "01/01/2015",
+    "phone": "31999999999",
+    "email": "driver.complete@test.com",
+    "street": "Automation Street",
+    "number": "100",
+    "complement": "Apt 10",
+    "district": "Automation District",
+    "zipCode": "30100000",
+    "state": "Ceará",
+    "city": "Fortaleza",
+    "credential": "RFID",
+    "RFID": "0324485"
+  }
+}
