@@ -3,25 +3,22 @@ class LoginPage {
     cy.visit('https://qa.trixlog.com/')
   }
 
-  fillUser(user) {
+  login(user, password) {
+    this.visit()
+
     cy.get('input').eq(0).should('be.visible').type(user)
-  }
 
-  fillPassword(password) {
     cy.get('input').eq(1).should('be.visible').type(password, { log: false })
-  }
 
-  submit() {
-    cy.contains('button', /Access|Acessar/)
+    cy.contains('button', 'Access')
       .should('be.visible')
       .click()
   }
 
-  login(user, password) {
-    this.visit()
-    this.fillUser(user)
-    this.fillPassword(password)
-    this.submit()
+  loginWithEnv() {
+    cy.env(['QUEO_USER', 'QUEO_PASS']).then((env) => {
+      this.login(env.QUEO_USER, env.QUEO_PASS)
+    })
   }
 
   assertLoggedIn() {
