@@ -5,7 +5,11 @@
     "contractType": "Permanent",
     "team": "Fortaleza",
     "status": "Active",
-    "registration": "900100"
+    "registration": "900100",
+    "credential": {
+      "type": "RFID",
+      "code": "95297982"
+    }
   },
   "complete": {
     "name": "Jose Driver da Silva",
@@ -16,17 +20,17 @@
     "registration": "900101",
     "registrationCode": "AUTO-900101",
     "greenMileCode": "GM-900101",
-    "admissionDate": "01/07/2026",
+    "admissionDate": "01072026",
     "nationalId": "12345678900",
     "taxId": "12345678901",
-    "dateOfBirth": "01/01/1990",
+    "dateOfBirth": "01011990",
     "license": "123456789",
     "licenseCategory": "AB",
     "licenseRegister": "MG123456",
     "driverRecordNumber": "987654",
-    "licenseIssueDate": "01/01/2020",
-    "expiration": "01/01/2030",
-    "firstLicenseDate": "01/01/2015",
+    "licenseIssueDate": "01012020",
+    "expiration": "01012030",
+    "firstLicenseDate": "01012015",
     "phone": "31999999999",
     "email": "driver.complete@test.com",
     "street": "Automation Street",
@@ -36,7 +40,10 @@
     "zipCode": "30100000",
     "state": "Ceará",
     "city": "Fortaleza",
-    "credential": "RFID",
-    "RFID": "0324485"
+    "credential": {
+      "type": "BINO",
+      "user": "driver.automation",
+      "password": "123456"
+    }
   }
 }

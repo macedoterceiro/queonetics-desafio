@@ -34,7 +34,19 @@ describe('Driver page', () => {
         DriverPage.clickCreateNew()
     })*/
 
+    it('should create a basic driver', () => {
+        cy.fixture('driver').then((data) => {
+            DriverPage.createBasicDriver(data.basic)
+        })
+    })
+
+    /*it('should create a complete driver', () => {
+        cy.fixture('driver').then((driver) => {
+            DriverPage.createCompleteDriver(driver.complete)
+        })
+    })
+
     it('should delete first driver from search result', () => {
         DriverPage.deleteFirstResultBySearch('lion')
-    })
+    })*/
 })

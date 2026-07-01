@@ -198,12 +198,286 @@ class DriverPage {
         }).should('exist')
     }
 
-    //Ação de criação de novo registro
+    //Ação de criação de registro
     clickCreateNew() {
-        cy.get('.table-actions__action')
-            .filter(':visible')
-            .contains('Create New')
+        cy.contains('Create New')
+            .should('be.visible')
             .click({ force: true })
+
+        cy.contains('Create driver')
+            .should('be.visible')
+    }
+
+    fillInput(label, value) {
+        cy.contains('label span', label)
+            .parents('.text-input')
+            .find('input')
+            .should('be.visible')
+            .click({ force: true })
+            .type('{selectall}{backspace}')
+            .type(value)
+    }
+
+    fillDate(label, value) {
+        cy.contains('label span', label)
+            .parents('.md-datepicker')
+            .find('input')
+            .as('dateInput')
+
+        cy.get('@dateInput')
+            .click({ force: true })
+            .type('{selectall}{backspace}')
+            .type(value, { delay: 30 })
+
+        cy.contains('Driver Data')
+            .click({ force: true })
+    }
+
+    selectAutocomplete(label, value) {
+        cy.contains('label span', label)
+            .parents('.md-select')
+            .as('autocompleteField')
+
+        cy.get('@autocompleteField')
+            .find('input')
+            .should('be.visible')
+            .click({ force: true })
+            .type('{selectall}{backspace}')
+
+        cy.get('@autocompleteField')
+            .find('input')
+            .should('be.visible')
+            .type(value, { delay: 80 })
+
+        cy.get('.items__scroll')
+            .filter(':visible')
+            .last()
+            .within(() => {
+                cy.get('.items__scroll__item')
+                    .should('have.length.greaterThan', 0)
+                    .then(($items) => {
+                        const item = [...$items].find((el) => {
+                            return el.innerText
+                                .trim()
+                                .toLowerCase()
+                                .includes(value.toLowerCase())
+                        })
+
+                        expect(item, `option "${value}"`).to.exist
+
+                        cy.wrap(item).click({ force: true })
+                    })
+            })
+    }
+
+    goToTab(tabName) {
+        cy.contains(tabName)
+            .should('be.visible')
+            .click({ force: true })
+    }
+
+    addCredential(credential) {
+        this.goToTab('Credentials')
+
+        cy.contains('Add Credential...')
+            .should('be.visible')
+            .click({ force: true })
+
+        this.selectAutocomplete('New Credential', credential.type)
+
+        cy.contains('button', 'Continue')
+            .should('be.visible')
+            .click({ force: true })
+
+        switch (credential.type) {
+            case 'RFID':
+                this.fillCredentialInput('RFID Code', credential.code)
+                break
+
+            case 'IBUTTON':
+                this.fillCredentialInput('IBUTTON Code', credential.code)
+                break
+
+            case 'Bluetooth Card':
+                this.fillCredentialInput('Serial', credential.serial)
+                break
+
+            case 'Safety':
+            case 'BINO':
+                this.fillCredentialInput('User', credential.user)
+                this.fillCredentialInput('Password', credential.password)
+                break
+
+            case 'GeoSafe':
+                this.fillCredentialInput('GeoSafe Code', credential.code)
+                this.selectCredentialVehicle(credential.vehicle)
+                break
+
+            default:
+                throw new Error(`Unsupported credential type: ${credential.type}`)
+        }
+
+        this.confirmAddCredential()
+    }
+
+    confirmAddCredential() {
+        cy.get('.modal')
+            .should('be.visible')
+            .within(() => {
+                cy.contains('button.tx-button--primary', 'Add')
+                    .should('be.visible')
+                    .and('not.be.disabled')
+                    .click({ force: true })
+            })
+
+        cy.get('.modal')
+            .should('not.exist')
+    }
+
+    fillCredentialInput(label, value) {
+        cy.get('.modal')
+            .contains('label span', label)
+            .parents('.text-input')
+            .find('input')
+            .should('be.visible')
+            .click({ force: true })
+            .type('{selectall}{backspace}')
+            .type(value)
+    }
+
+    selectCredentialVehicle(vehicle) {
+        cy.get('.modal')
+            .contains('label span', 'Vehicle')
+            .parents('.md-select')
+            .find('input')
+            .should('be.visible')
+            .click({ force: true })
+            .type(vehicle, { delay: 80 })
+
+        cy.get('.items__scroll')
+            .filter(':visible')
+            .last()
+            .find('.items__scroll__item')
+            .should('have.length.greaterThan', 0)
+            .then(($items) => {
+                const item = [...$items].find((el) =>
+                    el.innerText.toLowerCase().includes(vehicle.toLowerCase())
+                )
+
+                expect(item, `vehicle option "${vehicle}"`).to.exist
+
+                cy.wrap(item).click({ force: true })
+            })
+    }
+
+    saveDriver() {
+        cy.intercept('POST', '**/driver**').as('saveDriver')
+
+        cy.contains('button', 'Save')
+            .should('be.visible')
+            .click({ force: true })
+
+        cy.wait('@saveDriver')
+            .its('response.statusCode')
+            .should('be.oneOf', [200, 201, 204])
+    }
+
+    assertDriverExistsBySearch(driverName) {
+        cy.intercept('POST', '**/driver/search**').as('searchDriver')
+
+        this.clickSearch()
+
+        cy.get('input[placeholder="Search for name, registration or RFID"]')
+            .should('be.visible')
+            .type('{selectall}{backspace}')
+            .type(driverName)
+
+        cy.wait('@searchDriver')
+
+        cy.get('.crud-list tbody tr')
+            .should('have.length.greaterThan', 0)
+
+        cy.get('.crud-list tbody tr')
+            .first()
+            .should(($row) => {
+                expect($row.text().toLowerCase()).to.include(driverName.toLowerCase())
+            })
+    }
+
+    //Importação de dados da fixture, separado por bloco para cadastro obrigatório e cadastro completo
+    fillPersonalData(driver) {
+        this.fillInput('Name', driver.name)
+        this.selectAutocomplete('Driver Type', driver.driverType, 0)
+        this.selectAutocomplete('Contract Type', driver.contractType, 0)
+        this.selectAutocomplete('Team', driver.team, 0)
+        this.selectAutocomplete('Status', driver.status, 0)
+        this.fillInput('Registration', driver.registration)
+
+        if (driver.registrationCode) {
+            this.fillInput('Registration Code', driver.registrationCode)
+        }
+
+        if (driver.greenMileCode) {
+            this.fillInput('GreenMile® Code', driver.greenMileCode)
+        }
+
+        if (driver.admissionDate) {
+           this.fillDate('Admission Date', driver.admissionDate)
+        }
+    }
+
+    fillDocumentation(driver) {
+        this.goToTab('Documentation')
+
+        this.fillInput('National ID Number / Identity Document (ID)', driver.nationalId)
+        this.fillInput('Tax Identification Number', driver.taxId)
+        this.fillDate('Date of Birth', driver.dateOfBirth)
+
+        this.fillInput('License', driver.license)
+        this.selectAutocomplete('License Category', driver.licenseCategory)
+        this.fillInput('License Register', driver.licenseRegister)
+        this.fillInput('Driver Record Number', driver.driverRecordNumber)
+        this.fillDate('License Issue Date', driver.licenseIssueDate)
+        this.fillDate('Expiration', driver.expiration)
+        this.fillDate('Date of First Driver’s License', driver.firstLicenseDate)
+    }
+
+    fillContact(driver) {
+        this.goToTab('Contact')
+
+        this.fillInput('Phone', driver.phone)
+        this.fillInput('E-mail', driver.email)
+        this.fillInput('Street', driver.street)
+        this.fillInput('Number', driver.number)
+        this.fillInput('Complement', driver.complement)
+        this.fillInput('District', driver.district)
+        this.fillInput('ZIP Code', driver.zipCode)
+        this.selectAutocomplete('State', driver.state)
+        this.fillInput('City', driver.city)
+    }
+
+    createBasicDriver(driver) {
+        this.clickCreateNew()
+        this.fillPersonalData(driver)
+        if (driver.credential) {
+            this.addCredential(driver.credential)
+        }
+        this.saveDriver()
+        //this.assertDriverExistsBySearch(driver.name)
+    }
+
+    createCompleteDriver(driver) {
+        this.clickCreateNew()
+        this.fillPersonalData(driver)
+        this.fillDocumentation(driver)
+        this.fillContact(driver)
+
+        if (driver.credential) {
+            this.addCredential(driver.credential)
+        }
+
+        this.saveDriver()
+        //this.assertDriverExistsBySearch(driver.name)
     }
 
     //Ação de exclusão de registro
