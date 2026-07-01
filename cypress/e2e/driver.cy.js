@@ -28,9 +28,13 @@ describe('Driver page', () => {
 
     it('should trigger export action', () => {
         DriverPage.clickExport()
-    })*/
+    })
 
     it('should trigger create new action', () => {
         DriverPage.clickCreateNew()
+    })*/
+
+    it('should delete first driver from search result', () => {
+        DriverPage.deleteFirstResultBySearch('lion')
     })
 })

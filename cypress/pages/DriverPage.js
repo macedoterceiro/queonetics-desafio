@@ -1,6 +1,6 @@
 class DriverPage {
 
-    //Verificações iniciais da página
+    //Verificações da página
     assertDriverPageLoaded() {
         cy.url().should('include', '#/driver')
 
@@ -31,6 +31,13 @@ class DriverPage {
         cy.contains(find).should('be.visible') // Validando a existencia de um registro que atenda o filtro de busca.
     } //Caso precise validar todas as respostas verificar nome e RFID se é compatível com o filtro de busca. Lembrar que o filtro aceita parcial.
 
+    assertTextContainsIgnoringCase(actualText, expectedText) {
+        expect(
+            actualText.toLowerCase(),
+            `Expected "${actualText}" to contain "${expectedText}" ignoring case`
+        ).to.include(expectedText.toLowerCase())
+    }
+
     //Ação de busca
     clickSearch() {
         cy.get('.table-actions__find')
@@ -49,19 +56,23 @@ class DriverPage {
     searchByText(text) {
         this.clickSearch()
 
+        cy.intercept('POST', '**/driver/search**').as('searchDriver')
+
         cy.get('input[placeholder="Search for name, registration or RFID"]')
-            .clear()
-            .type(text)
-            //.wait(2000) //Apenas para validação visual, não é necessário para o teste
-
-        cy.get('.crud-list')
-            .contains(text, { matchCase: false })
             .should('be.visible')
-            .then(() => {
-                this.clearSearch()
-                this.clickSearch()
-            })
+            .type('{selectall}{backspace}')
+            .type(text)
 
+        cy.wait('@searchDriver')
+
+        cy.get('.crud-list tbody tr')
+            .should('have.length.greaterThan', 0)
+
+        cy.get('.crud-list tbody tr')
+            .first()
+            .should(($row) => {
+                expect($row.text().toLowerCase()).to.include(text.toLowerCase())
+            })
     }
 
     //Ação de filtro
@@ -195,6 +206,28 @@ class DriverPage {
             .click({ force: true })
     }
 
+    //Ação de exclusão de registro
+    deleteFirstResultBySearch(text) {
+        this.searchByText(text)
+
+        cy.get('.crud-list tbody tr')
+            .first()
+            .find('.fa-trash')
+            .should('exist')
+            .click({ force: true })
+
+        this.confirmDeleteIfNeeded()
+    }
+
+    confirmDeleteIfNeeded() {
+        cy.get('body').then(($body) => {
+            if ($body.text().includes('Are you sure')) {
+                cy.contains('button', 'Delete')
+                    .should('be.visible')
+                    .click({ force: true })
+            }
+        })
+    }
 }
 
 export default new DriverPage()
