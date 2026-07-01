@@ -26,26 +26,36 @@ class DriverPage {
         cy.contains('Contract Type').should('be.visible')
     }
 
-    openSearch() {
+    clickSearch() {
         cy.get('.table-actions__find')
-        .should('be.visible')
-        .contains('Search')
-        .click({ force: true })
+            .should('be.visible')
+            .contains('Search')
+            .click({ force: true })
+    }
 
+    clearSearch() {
         cy.get('input[placeholder="Search for name, registration or RFID"]')
-        .should('be.visible')
+            .parent()
+            .find('.fa-times, .fa-xmark, i')
+            .click({ force: true })
     }
 
     searchByText(text) {
-        this.openSearch()
+        this.clickSearch()
 
         cy.get('input[placeholder="Search for name, registration or RFID"]')
             .clear()
             .type(text)
+            //.wait(2000) //Apenas para validação visual, não é necessário para o teste
 
         cy.get('.crud-list')
-            .should('be.visible')
             .contains(text, { matchCase: false })
+            .should('be.visible')
+            .then(() => {
+                this.clearSearch()
+                this.clickSearch()
+            })
+
     }
 
     openFilter() {

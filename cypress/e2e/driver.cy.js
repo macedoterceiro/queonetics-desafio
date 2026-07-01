@@ -16,15 +16,15 @@ describe('Driver page', () => {
 
   it('should display driver table columns', () => {
     DriverPage.assertTableVisible()
-  })*/
+  })
 
   it('should open search action', () => {
     DriverPage.searchByText('20210416')
-  })/*
+  })*/
 
   it('should open filter action', () => {
     DriverPage.clickFilter()
-  })
+  })/*
 
   it('should trigger export action', () => {
     DriverPage.clickExport()
