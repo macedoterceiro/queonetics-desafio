@@ -7,8 +7,9 @@
     "status": "Active",
     "registration": "900100",
     "credential": {
-      "type": "RFID",
-      "code": "95297982"
+      "type": "BINO",
+      "user": "ze-driver",
+      "password": "cilada"
     }
   },
   "complete": {
@@ -40,10 +41,9 @@
     "zipCode": "30100000",
     "state": "Ceará",
     "city": "Fortaleza",
-    "credential": {
-      "type": "BINO",
-      "user": "driver.automation",
-      "password": "123456"
+   "credential": {
+      "type": "RFID",
+      "code": "95297982"
     }
   },
   "edit": {
