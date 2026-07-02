@@ -1,0 +1,362 @@
+{
+  "info": {
+    "_postman_id": "1df34dac-2a4e-43ad-ad04-40e405223956",
+    "name": "Queonetics",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "18328481"
+  },
+  "item": [
+    {
+      "name": "01 - Authenticate App",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const response = pm.response.json();\r",
+              "\r",
+              "pm.environment.set(\"driverId\", response.id);\r",
+              "pm.environment.set(\"customerId\", response.authCustomerId);\r",
+              "pm.environment.set(\"driverUuid\", response.uuid);\r",
+              "pm.environment.set(\"driverName\", response.name);\r",
+              "\r",
+              "const authorization = pm.response.headers.get(\"Authorization\");\r",
+              "pm.environment.set(\"authorization\", authorization);\r",
+              "\r",
+              "pm.test(\"Authorization header exists\", function () {\r",
+              "    pm.expect(authorization).to.not.be.null;\r",
+              "});\r",
+              "\r",
+              "pm.environment.set(\"authorization\", authorization);\r",
+              "\r",
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Driver was authenticated\", function () {\r",
+              "    const response = pm.response.json();\r",
+              "\r",
+              "    pm.expect(response).to.have.property(\"id\");\r",
+              "    pm.expect(response).to.have.property(\"name\");\r",
+              "    pm.expect(response).to.have.property(\"uuid\");\r",
+              "    pm.expect(response.name).to.eql(\"bino teste - Introduce\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"appVersion\": \"4.6.2\",\r\n    \"attempts\": 0,\r\n    \"login\": \"user\",\r\n    \"notificationToken\": \"\",\r\n    \"notificationTokenMessage\": true,\r\n    \"password\": \"password\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/driverapp/auth",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "driverapp",
+            "auth"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "02 - Vehicle Allowed",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const vehicles = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"There is at least one allowed vehicle\", function () {\r",
+              "    pm.expect(vehicles).to.be.an(\"array\");\r",
+              "    pm.expect(vehicles.length).to.be.greaterThan(0);\r",
+              "});\r",
+              "\r",
+              "const vehicle = vehicles[6];\r",
+              "\r",
+              "pm.environment.set(\"vehicleId\", vehicle.vehicleId);\r",
+              "pm.environment.set(\"vehiclePlate\", vehicle.vehiclePlate);\r",
+              "\r",
+              "pm.test(\"Vehicle data was saved\", function () {\r",
+              "    pm.expect(vehicle.vehicleId).to.be.a(\"number\");\r",
+              "    pm.expect(vehicle.vehicleId).to.be.greaterThan(0);\r",
+              "\r",
+              "    pm.expect(vehicle.vehiclePlate).to.be.a(\"string\");\r",
+              "    pm.expect(vehicle.vehiclePlate).to.not.equal(\"\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "{{authorization}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "{{baseUrl}}/driverapp/vehicle/allowed",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "driverapp",
+            "vehicle",
+            "allowed"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "03 - Vehicle Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Driver logged into vehicle\", function () {\r",
+              "    const response = pm.response.json();\r",
+              "\r",
+              "    pm.expect(response).to.have.property(\"vehicleId\");\r",
+              "    pm.expect(String(response.vehicleId)).to.eql(String(pm.environment.get(\"vehicleId\")));\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disabledSystemHeaders": {}
+      },
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "{{authorization}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/driverapp/vehicle/login?vehicleId={{vehicleId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "driverapp",
+            "vehicle",
+            "login"
+          ],
+          "query": [
+            {
+              "key": "vehicleId",
+              "value": "{{vehicleId}}"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "03 - Vehicle Login Force",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const response = pm.response.json();\r",
+              "\r",
+              "pm.environment.set(\"vehicleLoginId\", response.id);\r",
+              "pm.environment.set(\"loggedVehicleId\", response.vehicleId);\r",
+              "pm.environment.set(\"loggedDriverId\", response.driverId);\r",
+              "\r",
+              "pm.test(\"Vehicle force login succeeded\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Vehicle login data saved\", function () {\r",
+              "    pm.expect(pm.environment.get(\"vehicleLoginId\")).to.not.be.empty;\r",
+              "    pm.expect(String(pm.environment.get(\"loggedVehicleId\"))).to.eql(String(pm.environment.get(\"vehicleId\")));\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disabledSystemHeaders": {
+          "content-type": true
+        }
+      },
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "{{authorization}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/driverapp/vehicle/login/force?vehicleId={{vehicleId}}&customerId={{customerId}}&driverId={{driverId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "driverapp",
+            "vehicle",
+            "login",
+            "force"
+          ],
+          "query": [
+            {
+              "key": "vehicleId",
+              "value": "{{vehicleId}}"
+            },
+            {
+              "key": "customerId",
+              "value": "{{customerId}}"
+            },
+            {
+              "key": "driverId",
+              "value": "{{driverId}}"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "04 - Vehicle Logout",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disabledSystemHeaders": {}
+      },
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "{{authorization}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/driverapp/vehicle/logout?vehicleId={{vehicleId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "driverapp",
+            "vehicle",
+            "logout"
+          ],
+          "query": [
+            {
+              "key": "vehicleId",
+              "value": "{{vehicleId}}"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "05 - Logout",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disabledSystemHeaders": {}
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "{{authorization}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/driverapp/logout",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "driverapp",
+            "logout"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
