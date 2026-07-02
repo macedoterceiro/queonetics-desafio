@@ -405,7 +405,7 @@ class DriverPage {
                 expect($row.text().toLowerCase()).to.include(driverName.toLowerCase())
             })
     }
-
+    
     //Ação de editar registro
     updateDriverUsingQuickEdit(searchText, driver) {
         this.openQuickEditBySearch(searchText)
@@ -413,7 +413,7 @@ class DriverPage {
         if (driver.integration) {
             this.fillQuickEditInput('Registration', driver.registration)
         }
-        
+
         if (driver.integration) {
             this.fillQuickEditInput('Integration', driver.integration)
         }
