@@ -13,30 +13,31 @@
 5. Vehicle Logout
 6. App Logout
 
-## Variaveis
+## Configuração
 
-Criar um novo environment com:
+Criar um novo Environment contendo:
 
-- Variable = baseUrl
-- Value = qa-trix2.trixlog.com/
+- baseUrl = qa-trix2.trixlog.com/
 
-Para autenticação é necessário:
+Para autenticação são necessários:
 
 - Usuário
 - Senha
 
-Após a autenticação o sistema armazena automaticamente os parâmetros da requisição seguinte, tais como:
+Após a autenticação, as variáveis abaixo são armazenadas automaticamente para utilização nas requisições seguintes:
 
 - authorization
 - customerId
 - driverId
 - vehicleId
 
-## Desafios
+## Desafios encontrados
 
-- Novos usuários cadastrados na aplicação não tem veículos disponíveis, necessário utilizar um usuário cadastrado previamente (bino);
-- A rota "Vehicle Login" atualmente retorna erro no servidor (500) em todos os casos, está salva para questionamentos posteriores;
-- A rota "Vehicle Login Force" atualmente funciona uma vez para cada Id válido, após isso retorna erro do servidor (500);
-- A rota "Vehicle Logout" atualmente retorna erro no servidor (500) em todos os casos, o que limita o uso da rota "Login Force";
-- A rota "Logout" embora tenha um grande numero de parâmetros no swagger, parecem todos opcionais;
-- Para o fluxo atual a requisição GET para "Logout" foi utilizada.
+Durante a execução dos testes foram identificados alguns comportamentos que podem indicar inconsistências na API:
+
+- Usuários recém-cadastrados não possuem veículos disponíveis para autenticação, sendo necessário utilizar um usuário previamente configurado (BINO).
+- A rota **Vehicle Login** retorna erro interno do servidor (HTTP 500) em todas as tentativas realizadas.
+- A rota **Vehicle Login Force** executa corretamente apenas uma vez para cada combinação válida de IDs. Nas tentativas seguintes passa a retornar HTTP 500.
+- A rota **Vehicle Logout** retorna HTTP 500 em todas as execuções realizadas.
+- A documentação Swagger apresenta diversos parâmetros para a rota **Logout**, porém todos aparentam ser opcionais.
+- Para o fluxo implementado foi utilizada a requisição **GET Logout**, que apresentou comportamento compatível com a documentação.
