@@ -1,0 +1,12 @@
+{
+  "backpack": {
+    "name": "Sauce Labs Backpack",
+    "color": "red circle",
+    "quantity": 1
+  },
+  "boltTShirt": {
+    "name": "Sauce Labs Bolt T-Shirt",
+    "color": "black circle",
+    "quantity": 1
+  }
+}
