@@ -226,6 +226,7 @@ Durante o desenvolvimento da automação alguns comportamentos exigiram adaptaç
 ## Refatoração para Page Objects
 
 Diferente do módulo principal (Frontend), o módulo mobile foi estruturado e desenvolvido como um módulo de Page Objects desde o começo, para evitar redundâncias e tornar a implementação mais robusta e de facilidade de manutenção, dado que não havia experiência previa com automação mobile em geral.
+
 ---
 
 ## Observações
