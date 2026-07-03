@@ -1,14 +1,30 @@
 class MenuScreen {
     get menuButton() {
-        return $('//android.view.ViewGroup[@content-desc="open menu"]')
+        return $('~open menu')
+    }
+
+    get catalogOption() {
+        return $('~menu item catalog')
     }
 
     get loginOption() {
-        return $('android=new UiSelector().text("Log In")')
+        return $('~menu item log in')
     }
 
     get logoutOption() {
-        return $('android=new UiSelector().text("Log Out")')
+        return $('~menu item log out')
+    }
+
+    get confirmLogoutButton() {
+        return $('android=new UiSelector().resourceId("android:id/button1").text("LOG OUT")')
+    }
+
+    get logoutSuccessOkButton() {
+        return $('android=new UiSelector().resourceId("android:id/button1").text("OK")')
+    }
+
+    get loginScreen() {
+        return $('~login screen')
     }
 }
 

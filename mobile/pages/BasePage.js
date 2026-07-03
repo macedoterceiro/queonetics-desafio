@@ -6,6 +6,8 @@ class BasePage {
 
     async type(element, value) {
         await element.waitForDisplayed({ timeout: 10000 })
+        await element.click()
+        await element.clearValue()
         await element.setValue(value)
     }
 
