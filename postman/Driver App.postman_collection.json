@@ -14,37 +14,39 @@
           "script": {
             "exec": [
               "const response = pm.response.json();\r",
-              "\r",
-              "pm.environment.set(\"driverId\", response.id);\r",
-              "pm.environment.set(\"customerId\", response.authCustomerId);\r",
-              "pm.environment.set(\"driverUuid\", response.uuid);\r",
-              "pm.environment.set(\"driverName\", response.name);\r",
+              "const requestBody = JSON.parse(pm.request.body.raw);\r",
               "\r",
               "const authorization = pm.response.headers.get(\"Authorization\");\r",
-              "pm.environment.set(\"authorization\", authorization);\r",
-              "\r",
-              "pm.test(\"Authorization header exists\", function () {\r",
-              "    pm.expect(authorization).to.not.be.null;\r",
-              "});\r",
-              "\r",
-              "pm.environment.set(\"authorization\", authorization);\r",
               "\r",
               "pm.test(\"Status code is 200\", function () {\r",
               "    pm.response.to.have.status(200);\r",
               "});\r",
               "\r",
-              "pm.test(\"Driver was authenticated\", function () {\r",
-              "    const response = pm.response.json();\r",
+              "pm.test(\"Authorization header exists\", function () {\r",
+              "    pm.expect(authorization).to.not.be.null;\r",
+              "});\r",
               "\r",
+              "pm.test(\"Driver was authenticated\", function () {\r",
               "    pm.expect(response).to.have.property(\"id\");\r",
+              "    pm.expect(response).to.have.property(\"authCustomerId\");\r",
               "    pm.expect(response).to.have.property(\"name\");\r",
-              "    pm.expect(response).to.have.property(\"uuid\");\r",
-              "    pm.expect(response.name).to.eql(\"bino teste - Introduce\");\r",
-              "});"
+              "});\r",
+              "\r",
+              "pm.environment.set(\"authorization\", authorization);\r",
+              "pm.environment.set(\"driverId\", response.id);\r",
+              "pm.environment.set(\"customerId\", response.authCustomerId);\r",
+              "pm.environment.set(\"login\", requestBody.login);"
             ],
             "type": "text/javascript",
             "packages": {},
             "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "packages": {},
+            "type": "text/javascript"
           }
         }
       ],
@@ -53,7 +55,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"appVersion\": \"4.6.2\",\r\n    \"attempts\": 0,\r\n    \"login\": \"user\",\r\n    \"notificationToken\": \"\",\r\n    \"notificationTokenMessage\": true,\r\n    \"password\": \"password\"\r\n}",
+          "raw": "{\r\n    \"appVersion\": \"4.6.2\",\r\n    \"attempts\": 0,\r\n    \"login\": \"ze-driver\",\r\n    \"notificationToken\": \"\",\r\n    \"notificationTokenMessage\": true,\r\n    \"password\": \"cilada\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -87,22 +89,16 @@
               "});\r",
               "\r",
               "pm.test(\"There is at least one allowed vehicle\", function () {\r",
-              "    pm.expect(vehicles).to.be.an(\"array\");\r",
-              "    pm.expect(vehicles.length).to.be.greaterThan(0);\r",
+              "    pm.expect(vehicles).to.be.an(\"array\").that.is.not.empty;\r",
               "});\r",
               "\r",
-              "const vehicle = vehicles[6];\r",
+              "const vehicle = vehicles.find(v => v.vehicleId);\r",
               "\r",
-              "pm.environment.set(\"vehicleId\", vehicle.vehicleId);\r",
-              "pm.environment.set(\"vehiclePlate\", vehicle.vehiclePlate);\r",
+              "pm.test(\"A valid vehicle was found\", function () {\r",
+              "    pm.expect(vehicle).to.not.be.undefined;\r",
+              "});\r",
               "\r",
-              "pm.test(\"Vehicle data was saved\", function () {\r",
-              "    pm.expect(vehicle.vehicleId).to.be.a(\"number\");\r",
-              "    pm.expect(vehicle.vehicleId).to.be.greaterThan(0);\r",
-              "\r",
-              "    pm.expect(vehicle.vehiclePlate).to.be.a(\"string\");\r",
-              "    pm.expect(vehicle.vehiclePlate).to.not.equal(\"\");\r",
-              "});"
+              "pm.environment.set(\"vehicleId\", vehicle.vehicleId);"
             ],
             "type": "text/javascript",
             "packages": {},
@@ -147,15 +143,20 @@
           "listen": "test",
           "script": {
             "exec": [
+              "const response = pm.response.json();\r",
+              "\r",
               "pm.test(\"Status code is 200\", function () {\r",
               "    pm.response.to.have.status(200);\r",
               "});\r",
               "\r",
-              "pm.test(\"Driver logged into vehicle\", function () {\r",
-              "    const response = pm.response.json();\r",
-              "\r",
+              "pm.test(\"Driver logged into selected vehicle\", function () {\r",
               "    pm.expect(response).to.have.property(\"vehicleId\");\r",
               "    pm.expect(String(response.vehicleId)).to.eql(String(pm.environment.get(\"vehicleId\")));\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Driver login returned valid data\", function () {\r",
+              "    pm.expect(response).to.have.property(\"driverId\");\r",
+              "    pm.expect(response).to.have.property(\"identificationType\");\r",
               "});"
             ],
             "type": "text/javascript",
@@ -173,6 +174,16 @@
           {
             "key": "Authorization",
             "value": "{{authorization}}",
+            "type": "text"
+          },
+          {
+            "key": "Customer",
+            "value": "{{customerId}}",
+            "type": "text"
+          },
+          {
+            "key": "Login",
+            "value": "{{login}}",
             "type": "text"
           }
         ],
@@ -197,7 +208,7 @@
       "response": []
     },
     {
-      "name": "03 - Vehicle Login Force",
+      "name": "04 - Vehicle Logout",
       "event": [
         {
           "listen": "test",
@@ -205,77 +216,22 @@
             "exec": [
               "const response = pm.response.json();\r",
               "\r",
-              "pm.environment.set(\"vehicleLoginId\", response.id);\r",
-              "pm.environment.set(\"loggedVehicleId\", response.vehicleId);\r",
-              "pm.environment.set(\"loggedDriverId\", response.driverId);\r",
-              "\r",
-              "pm.test(\"Vehicle force login succeeded\", function () {\r",
+              "pm.test(\"Status code is 200\", function () {\r",
               "    pm.response.to.have.status(200);\r",
               "});\r",
               "\r",
-              "pm.test(\"Vehicle login data saved\", function () {\r",
-              "    pm.expect(pm.environment.get(\"vehicleLoginId\")).to.not.be.empty;\r",
-              "    pm.expect(String(pm.environment.get(\"loggedVehicleId\"))).to.eql(String(pm.environment.get(\"vehicleId\")));\r",
-              "});"
-            ],
-            "type": "text/javascript",
-            "packages": {},
-            "requests": {}
-          }
-        }
-      ],
-      "protocolProfileBehavior": {
-        "disabledSystemHeaders": {
-          "content-type": true
-        }
-      },
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "{{authorization}}",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "{{baseUrl}}/driverapp/vehicle/login/force?vehicleId={{vehicleId}}&customerId={{customerId}}&driverId={{driverId}}",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "driverapp",
-            "vehicle",
-            "login",
-            "force"
-          ],
-          "query": [
-            {
-              "key": "vehicleId",
-              "value": "{{vehicleId}}"
-            },
-            {
-              "key": "customerId",
-              "value": "{{customerId}}"
-            },
-            {
-              "key": "driverId",
-              "value": "{{driverId}}"
-            }
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "04 - Vehicle Logout",
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test(\"Status code is 200\", function () {\r",
-              "    pm.response.to.have.status(200);\r",
+              "pm.test(\"Driver logged out from selected vehicle\", function () {\r",
+              "    pm.expect(response.driverId).to.eql(Number(pm.environment.get(\"driverId\")));\r",
+              "    pm.expect(response.vehicleId).to.eql(Number(pm.environment.get(\"vehicleId\")));\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Logout date was registered\", function () {\r",
+              "    pm.expect(response.logoutDate).to.not.be.null;\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Login occurred before logout\", function () {\r",
+              "    pm.expect(new Date(response.logoutDate).getTime())\r",
+              "        .to.be.greaterThan(new Date(response.loginDate).getTime());\r",
               "});"
             ],
             "type": "text/javascript",
@@ -293,6 +249,16 @@
           {
             "key": "Authorization",
             "value": "{{authorization}}",
+            "type": "text"
+          },
+          {
+            "key": "Customer",
+            "value": "{{customerId}}",
+            "type": "text"
+          },
+          {
+            "key": "Login",
+            "value": "{{login}}",
             "type": "text"
           }
         ],
@@ -323,8 +289,15 @@
           "listen": "test",
           "script": {
             "exec": [
+              "const response = pm.response.json();\r",
+              "\r",
               "pm.test(\"Status code is 200\", function () {\r",
               "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Logout redirect URL is valid\", function () {\r",
+              "    pm.expect(response).to.be.a(\"string\");\r",
+              "    pm.expect(response).to.eql(\"https://app.trixlog.com\");\r",
               "});"
             ],
             "type": "text/javascript",

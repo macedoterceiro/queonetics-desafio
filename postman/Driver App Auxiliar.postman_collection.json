@@ -1,0 +1,234 @@
+{
+  "info": {
+    "_postman_id": "e7c5122c-c611-446e-851f-3988d46a20e8",
+    "name": "Verificações do servidor",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "18328481"
+  },
+  "item": [
+    {
+      "name": "x1 - Current Settings",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "{{authorization}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "none"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/driverapp/current-settings",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "driverapp",
+            "current-settings"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "x2 - Settings",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const vehicles = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"There is at least one allowed vehicle\", function () {\r",
+              "    pm.expect(vehicles).to.be.an(\"array\");\r",
+              "    pm.expect(vehicles.length).to.be.greaterThan(0);\r",
+              "});\r",
+              "\r",
+              "const vehicle = vehicles[0];\r",
+              "\r",
+              "pm.environment.set(\"vehicleId\", vehicle.vehicleId);\r",
+              "pm.environment.set(\"vehiclePlate\", vehicle.vehiclePlate);\r",
+              "pm.environment.set(\"equipmentId\", vehicle.equipmentId || \"\");\r",
+              "pm.environment.set(\"equipmentSerial\", vehicle.equipmentSerial || \"\");\r",
+              "\r",
+              "pm.test(\"Vehicle data was saved\", function () {\r",
+              "    pm.expect(pm.environment.get(\"vehicleId\")).to.not.be.empty;\r",
+              "    pm.expect(pm.environment.get(\"vehiclePlate\")).to.not.be.empty;\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "{{authorization}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "{{baseUrl}}/driverapp/settings",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "driverapp",
+            "settings"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "x3 - Validate",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "{{authorization}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "{{baseUrl}}/driverapp/validate",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "driverapp",
+            "validate"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "03 - Vehicle Login Force",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const response = pm.response.json();\r",
+              "\r",
+              "pm.environment.set(\"vehicleLoginId\", response.id);\r",
+              "pm.environment.set(\"loggedVehicleId\", response.vehicleId);\r",
+              "pm.environment.set(\"loggedDriverId\", response.driverId);\r",
+              "\r",
+              "pm.test(\"Vehicle force login succeeded\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Vehicle login data saved\", function () {\r",
+              "    pm.expect(pm.environment.get(\"vehicleLoginId\")).to.not.be.empty;\r",
+              "    pm.expect(String(pm.environment.get(\"loggedVehicleId\"))).to.eql(String(pm.environment.get(\"vehicleId\")));\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disabledSystemHeaders": {
+          "content-type": true
+        }
+      },
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "{{authorization}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/driverapp/vehicle/login/force?vehicleId={{vehicleId}}&customerId={{customerId}}&driverId={{driverId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "driverapp",
+            "vehicle",
+            "login",
+            "force"
+          ],
+          "query": [
+            {
+              "key": "vehicleId",
+              "value": "{{vehicleId}}"
+            },
+            {
+              "key": "customerId",
+              "value": "{{customerId}}"
+            },
+            {
+              "key": "driverId",
+              "value": "{{driverId}}"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
