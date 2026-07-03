@@ -66,12 +66,14 @@ Durante o desenvolvimento dos testes foram identificados alguns comportamentos e
 
 - Usuários recém-criados não possuem veículos autorizados por padrão. Inicialmente foi necessário utilizar um condutor previamente cadastrado para validar o fluxo da API.
 - Posteriormente foi identificado que os condutores somente podem realizar login em veículos pertencentes à mesma organização. Após a liberação das permissões no ambiente de QA, tornou-se possível visualizar os veículos autorizados para o usuário utilizado nos testes.
-- Os endpoints **Vehicle Login**, **Vehicle Logout** e **Driver Current Login** exigem, além do `Authorization`, os headers `Customer` (valor fixo **101**) e `Login` (mesmo login utilizado na autenticação). Essa informação foi disponibilizada posteriormente pela equipe responsável durante a execução do desafio.
+- Os endpoints **Vehicle Login** e **Vehicle Logout** exigem, além do `Authorization`, os headers `Customer` (valor fixo **101**) e `Login` (mesmo login utilizado na autenticação). Essa informação foi disponibilizada posteriormente pela equipe responsável durante a execução do desafio.
 - O endpoint **Vehicle Login Force** foi utilizado inicialmente como alternativa por aparentar contornar o erro encontrado durante os testes. Posteriormente foi esclarecido que esse endpoint não faz parte do escopo do desafio e ignora algumas validações de negócio.
+- A collection **Verificações do servidor** foram utilizadas para investigação da possivel causa do erro nos endpoints de **Vehicle Login** e **Vehicle Logout**
 
 ## Observações
 
 - Após realizar o login em um veículo, recomenda-se executar obrigatoriamente o endpoint **Vehicle Logout** antes de realizar um novo **Vehicle Login**.
-- O endpoint **Driver Current Login** pode ser utilizado para validar qual veículo está atualmente associado ao condutor após a autenticação no veículo.
 - O endpoint **Vehicle Login Force** foi mantido na Collection apenas para fins de consulta e investigação, não fazendo parte do fluxo oficial solicitado no desafio.
 - O acesso aos veículos disponíveis depende das permissões do usuário e da organização à qual o condutor pertence. Essa configuração foi ajustada no ambiente de QA durante o desenvolvimento dos testes.
+- O header `Customer` atualmente recebe do usuário criado o valor **101**, não sendo necessário fixá-lo.
+- A collection **Verificações do servidor** foi adicionada ao projeto como evidencia de uso, não sendo necessário para validação do fluxo solicitado.
