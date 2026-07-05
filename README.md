@@ -38,6 +38,12 @@ queonetics-desafio/
 │   ├── specs/
 │   └── wdio.conf.js
 │
+├── pentest/
+│   ├── Auditoria-Pentest.md
+│
+├── performance/
+│   ├── Auditoria-Performance.md
+│
 └── README.md
 ```
 
