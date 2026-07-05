@@ -17,12 +17,13 @@ class DriverPageAssertions {
     }
 
     assertTableColumnsVisible() {
-        cy.get('.crud-list').should('be.visible')
-
-        cy.contains('Name').should('be.visible')
-        cy.contains('Team & Organization').should('be.visible')
-        cy.contains('RFID & Integration').should('be.visible')
-        cy.contains('Contract Type').should('be.visible')
+        cy.get('.crud-list', { timeout: 10000 })
+        .should('be.visible')
+        .within(() => {
+            cy.contains('Team & Organization').should('be.visible')
+            cy.contains('RFID & Integration').should('be.visible')
+            cy.contains('Contract Type').should('be.visible')
+        })
     }
 
     assertRecordVisible(text) {

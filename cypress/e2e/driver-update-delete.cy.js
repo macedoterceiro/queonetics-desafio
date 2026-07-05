@@ -5,11 +5,8 @@ import DriverPage from '../pages/driver/DriverPage'
 describe('Driver update and delete', () => {
 
     beforeEach(() => {
-        cy.visit('https://qa.trixlog.com/')
-
         LoginPage.loginWithEnv()
         LoginPage.assertLoggedIn()
-
         SidebarPage.accessDriver()
         DriverPage.assertLoaded()
     })

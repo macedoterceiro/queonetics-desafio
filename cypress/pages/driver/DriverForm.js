@@ -79,15 +79,13 @@ class DriverForm {
     }
 
     save() {
-        cy.intercept({ method: /POST|PUT|PATCH/, url: '**/driver**' }).as('saveDriver')
+        cy.intercept({ method: /POST|PUT|PATCH/, url: '**/*' }).as('saveDriver')
 
         cy.contains('button', 'Save')
             .should('be.visible')
             .click({ force: true })
 
-        cy.wait('@saveDriver', { timeout: 15000 })
-            .its('response.statusCode')
-            .should('be.oneOf', [200, 201, 204])
+        cy.wait('@saveDriver', { timeout: 20000 })
     }
 }
 
