@@ -64,6 +64,7 @@ mobile/
 │   ├── LoginScreen.js
 │   ├── MenuScreen.js
 │   ├── ProductScreen.js
+│   ├── ProductDetailsScreen.js
 │   ├── CartScreen.js
 │   └── CheckoutScreen.js
 │
@@ -77,7 +78,6 @@ mobile/
 │   └── CheckoutPage.js
 │
 ├── specs/
-│   ├── login.spec.js
 │   └── purchase-flow.spec.js
 │
 ├── wdio.conf.js
