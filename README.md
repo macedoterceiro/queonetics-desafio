@@ -63,7 +63,6 @@ Execução realizada diretamente no **Windows** utilizando o Postman Desktop.
 
 - Cypress
 - JavaScript
-- Page Object Model (POM)
 
 O desenvolvimento foi realizado utilizando **Visual Studio Code** executando sobre **Ubuntu (WSL)**.
 
