@@ -9,17 +9,16 @@
 1. Authenticate App
 2. Vehicle Allowed
 3. Vehicle Login
-4. Vehicle Login Force *(utilizado apenas durante investigação)*
-5. Vehicle Logout
-6. Driver Current Login *(validação do veículo logado)*
-7. App Logout
+3.1. Vehicle Login Force *(utilizado apenas durante investigação)*
+4. Vehicle Logout
+5. App Logout
 
 ## Configuração
 
 Criar um novo **Environment** contendo:
 
 - `baseUrl = qa-trix2.trixlog.com/`
-- `customer = 101`
+- `customerId = 101` *(foi observado que o usuário criado recebeu **customer = 101** internamente, então esse campo poderia ser preenchido automaticamente após autenticação)*
 - `login =` *(preenchido automaticamente após autenticação)*
 
 Para autenticação são necessários:
@@ -49,8 +48,6 @@ Vehicle Allowed
         ↓
 Vehicle Login
         ↓
-Driver Current Login
-        ↓
 Vehicle Logout
         ↓
 App Logout
@@ -73,7 +70,6 @@ Durante o desenvolvimento dos testes foram identificados alguns comportamentos e
 ## Observações
 
 - Após realizar o login em um veículo, recomenda-se executar obrigatoriamente o endpoint **Vehicle Logout** antes de realizar um novo **Vehicle Login**.
-- O endpoint **Vehicle Login Force** foi mantido na Collection apenas para fins de consulta e investigação, não fazendo parte do fluxo oficial solicitado no desafio.
 - O acesso aos veículos disponíveis depende das permissões do usuário e da organização à qual o condutor pertence. Essa configuração foi ajustada no ambiente de QA durante o desenvolvimento dos testes.
 - O header `Customer` atualmente recebe do usuário criado o valor **101**, não sendo necessário fixá-lo.
 - A collection **Verificações do servidor** foi adicionada ao projeto como evidencia de uso, não sendo necessário para validação do fluxo solicitado.
