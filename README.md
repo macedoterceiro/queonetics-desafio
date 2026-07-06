@@ -1,10 +1,12 @@
 # Queonetics - Desafio Técnico QA
 
-Este repositório reúne a implementação dos três módulos propostos no desafio técnico:
+Este repositório reúne a implementação dos três módulos, junto a dois relatórios técnicos propostos no desafio técnico:
 
 - Testes de API
 - Testes Frontend Web
 - Testes Mobile
+- Relatório Pentest
+- Relatório Performance
 
 Cada módulo foi desenvolvido utilizando a ferramenta mais adequada ao cenário proposto e documentado individualmente em seu respectivo **README.md**.
 
@@ -137,6 +139,8 @@ Consulte:
 - `api/README.md`
 - `frontend/README.md`
 - `mobile/README.md`
+- `pentest/README.md`
+- `performance/README.md`
 
 para instruções detalhadas.
 
